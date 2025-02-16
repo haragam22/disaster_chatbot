@@ -2,14 +2,20 @@ import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 import os
+import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Initialize Firebase
-cred = credentials.Certificate("path/to/firebase-key.json")  # Replace with your JSON key file
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+# Load Firebase credentials from the environment variable
+firebase_key_json = os.getenv("")
 
+if firebase_key_json:
+    firebase_config = json.loads(firebase_key_json)  # Convert the JSON string to a Python dictionary
+    cred = credentials.Certificate(firebase_config)  # Use the dictionary directly
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+else:
+    raise ValueError("FIREBASE_KEY environment variable is missing!")
 # API KEY (Replace with your actual key)
 API_KEY = "f3586fa8edecb386c73d2e88d2812fdc469074f62d35381542b56de6f88fd26a"
 print(API_KEY)  # Get from Groq, Together.AI, or Mistral AI
