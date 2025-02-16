@@ -114,7 +114,7 @@ def get_ai_response(user_query):
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    print("Received request:", request)  # Debugging line
+    return {"response": f"You said: {request.message}"}  # Debugging line
 
     headers = {
         "Authorization": f"Bearer {API_KEY}",
