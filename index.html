@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 60%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <h2>Disaster AI Chatbot</h2>
+        <input type="text" id="userInput" placeholder="Ask a question..." />
+        <button onclick="sendMessage()">Send</button>
+        <p class="response" id="botResponse"></p>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userMessage = document.getElementById("userInput").value;
+            let responseField = document.getElementById("botResponse");
+
+            if (!userMessage) {
+                responseField.innerHTML = "Please enter a message!";
+                return;
+            }
+
+            responseField.innerHTML = "Thinking...";
+
+            try {
+                let response = await fetch("https://disaster-chatbot.onrender.com/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                });
+
+                let data = await response.json();
+                responseField.innerHTML = `<strong>Bot:</strong> ${data.response}`;
+            } catch (error) {
+                responseField.innerHTML = "Error connecting to the server.";
+            }
+        }
+    </script>
+
+</body>
+</html>
