@@ -99,23 +99,8 @@ Your goal is to provide **clear, practical, and localized guidance** to people f
 class ChatRequest(BaseModel):
     message: str
 
-def get_ai_response(user_query):
-    payload = {
-        "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",  # Use the model name from your provider
-        "messages": [{"role": "user", "content": user_query}],
-        "temperature": 0.7
-    }
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
-    }
-    response = requests.post(API_URL, json=payload, headers=headers)
-    return response.json().get("choices", [{}])[0].get("message", {}).get("content", "Error: No response")
-
 @app.post("/chat")
 async def chat(request: ChatRequest):
-    return {"response": f"You said: {request.message}"}  # Debugging line
-
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
@@ -130,12 +115,10 @@ async def chat(request: ChatRequest):
     }
 
     response = requests.post(API_URL, headers=headers, json=payload)
-    
-    print("API Response:", response.text)  # Debugging line
 
     if response.status_code == 200:
-        return response.json()
+        data = response.json()
+        return {"response": data["choices"][0]["message"]["content"]}
     else:
         return {"error": response.text}
-
 
