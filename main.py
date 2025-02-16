@@ -2,6 +2,13 @@ import requests
 from fastapi import FastAPI
 from pydantic import BaseModel
 import os
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# Initialize Firebase
+cred = credentials.Certificate("path/to/firebase-key.json")  # Replace with your JSON key file
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 # API KEY (Replace with your actual key)
 API_KEY = "f3586fa8edecb386c73d2e88d2812fdc469074f62d35381542b56de6f88fd26a"
@@ -117,8 +124,12 @@ async def chat(request: ChatRequest):
     response = requests.post(API_URL, headers=headers, json=payload)
 
     if response.status_code == 200:
-        data = response.json()
-        return {"response": data["choices"][0]["message"]["content"]}
+        bot_response = response.json()["choices"][0]["message"]["content"]
+
+        # Save to Firebase
+        chat_data = {"user_message": request.message, "bot_response": bot_response}
+        db.collection("chat_history").add(chat_data)
+
+        return {"response": bot_response}
     else:
         return {"error": response.text}
-
